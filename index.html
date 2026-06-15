@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UoSM — 5 Strategic Imperatives</title>
+<style>
+  /* ---- Brand palette (swap for official University of Southampton hex) ---- */
+  :root{
+    --marine:#005C84;      /* primary Southampton blue */
+    --deep:#003A54;        /* darker shade */
+    --horizon:#00A3AD;     /* teal accent */
+    --gold:#C8A45D;        /* warm accent */
+    --ink:#15242B;
+    --paper:#F4F7F8;
+    --white:#ffffff;
+    --shadow:0 10px 30px rgba(0,40,60,.18);
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;font-family:"Segoe UI",system-ui,-apple-system,Helvetica,Arial,sans-serif;
+    background:radial-gradient(circle at 50% 35%,#eaf3f6 0%,#dce8ec 60%,#cfe0e5 100%);
+    color:var(--ink);min-height:100vh;display:flex;flex-direction:column;align-items:center;
+    padding:32px 16px;
+  }
+  header{text-align:center;max-width:760px;margin-bottom:8px}
+  header h1{font-size:30px;margin:0;color:var(--deep);letter-spacing:.3px;line-height:1.15}
+  header h1 span{color:var(--marine)}
+  header p{margin:6px 0 0;color:#4a6068;font-size:.95rem}
+
+  /* ---- The interactive wheel ---- */
+  .wheel{
+    position:relative;width:600px;max-width:92vw;margin:10px auto 0;
+  }
+  .wheel::before{content:"";display:block;padding-bottom:100%} /* forces a square */
+  .hub{
+    position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+    width:230px;height:230px;border-radius:50%;
+    background:radial-gradient(circle at 35% 30%,var(--marine),var(--deep));
+    color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    text-align:center;padding:18px;box-shadow:var(--shadow);z-index:2;
+  }
+  .hub strong{font-size:22px;line-height:1.1}
+  .hub small{display:block;margin-top:6px;font-size:.7rem;letter-spacing:2px;text-transform:uppercase;opacity:.85}
+
+  /* hotspot nodes positioned around the circle */
+  .node{
+    position:absolute;left:50%;top:50%;width:120px;
+    transform:translate(-50%,-50%) rotate(var(--a)) translateY(-220px) rotate(calc(-1*var(--a)));
+    cursor:pointer;text-align:center;z-index:3;
+  }
+  .node .dot{
+    width:74px;height:74px;margin:0 auto;border-radius:50%;
+    background:var(--white);border:3px solid var(--horizon);
+    display:flex;align-items:center;justify-content:center;
+    font-size:1.6rem;font-weight:700;color:var(--marine);
+    box-shadow:var(--shadow);transition:transform .18s,border-color .18s,background .18s;
+    position:relative;
+  }
+  .node .dot::after{ /* pulse ring */
+    content:"";position:absolute;top:-3px;left:-3px;right:-3px;bottom:-3px;border-radius:50%;
+    border:3px solid var(--horizon);animation:pulse 2.4s infinite;opacity:0;
+  }
+  @keyframes pulse{0%{transform:scale(1);opacity:.6}100%{transform:scale(1.5);opacity:0}}
+  .node .label{margin-top:8px;font-size:.8rem;font-weight:600;color:var(--deep);line-height:1.15}
+  .node:hover .dot,.node.active .dot{transform:scale(1.08);background:var(--marine);color:#fff;border-color:var(--gold)}
+
+  /* connecting line from hub to node */
+  svg.spokes{position:absolute;top:0;left:0;width:100%;height:100%;z-index:1;pointer-events:none}
+  svg.spokes line{stroke:var(--horizon);stroke-width:2;stroke-dasharray:4 5;opacity:.5}
+
+  /* ---- Detail panel ---- */
+  .panel{
+    width:min(620px,92vw);background:var(--white);border-radius:18px;box-shadow:var(--shadow);
+    margin-top:26px;padding:0;overflow:hidden;max-height:0;opacity:0;
+    transition:max-height .4s ease,opacity .3s ease;
+  }
+  .panel.open{max-height:600px;opacity:1}
+  .panel .head{background:linear-gradient(120deg,var(--marine),var(--horizon));color:#fff;padding:18px 22px}
+  .panel .head h2{margin:0;font-size:1.15rem}
+  .panel .head p{margin:4px 0 0;font-size:.85rem;opacity:.9}
+  .panel .subs{display:grid;grid-template-columns:1fr;gap:0}
+  .sub{display:flex;gap:14px;padding:16px 22px;border-top:1px solid #eef2f3}
+  .sub .n{flex:0 0 30px;height:30px;border-radius:50%;background:var(--paper);color:var(--marine);
+    font-weight:700;display:flex;align-items:center;justify-content:center;font-size:.85rem}
+  .sub h3{margin:0 0 3px;font-size:.95rem;color:var(--deep)}
+  .sub p{margin:0;font-size:.85rem;color:#5a6e75;line-height:1.4}
+  .hint{margin-top:18px;font-size:.8rem;color:#6b8088}
+
+  @media(max-width:520px){
+    .node{transform:translate(-50%,-50%) rotate(var(--a)) translateY(-150px) rotate(calc(-1*var(--a)));width:96px}
+    .node .dot{width:58px;height:58px;font-size:1.2rem}
+    .node .label{font-size:.68rem}
+  }
+</style>
+</head>
+<body>
+  <header>
+    <h1>The University of Southampton Malaysia's<br><span>5 Strategic Imperatives</span></h1>
+    <p>Click an imperative to reveal its three sub-imperatives.</p>
+  </header>
+
+  <div class="wheel" id="wheel">
+    <svg class="spokes" id="spokes" viewBox="0 0 100 100" preserveAspectRatio="none"></svg>
+    <div class="hub">
+      <strong>UoSM<br>Strategic Plan</strong>
+      <small>2025 &ndash; 2030</small>
+    </div>
+    <!-- nodes injected by JS -->
+  </div>
+
+  <div class="panel" id="panel">
+    <div class="head"><h2 id="p-title"></h2><p id="p-desc"></p></div>
+    <div class="subs" id="p-subs"></div>
+  </div>
+  <p class="hint">Tip: edit the <code>IMPERATIVES</code> array near the top of the script to change all text.</p>
+
+<script>
+/* ====== EDIT EVERYTHING HERE ====== */
+const IMPERATIVES = [
+  { id:1, label:"Educational Excellence", desc:"Short descriptor for imperative one.",
+    subs:[
+      {h:"Sub-imperative 1.1", p:"One sentence describing this sub-imperative."},
+      {h:"Sub-imperative 1.2", p:"One sentence describing this sub-imperative."},
+      {h:"Sub-imperative 1.3", p:"One sentence describing this sub-imperative."}
+  ]},
+  { id:2, label:"Research & Innovation", desc:"Short descriptor for imperative two.",
+    subs:[
+      {h:"Sub-imperative 2.1", p:"One sentence describing this sub-imperative."},
+      {h:"Sub-imperative 2.2", p:"One sentence describing this sub-imperative."},
+      {h:"Sub-imperative 2.3", p:"One sentence describing this sub-imperative."}
+  ]},
+  { id:3, label:"Industry & Engagement", desc:"Short descriptor for imperative three.",
+    subs:[
+      {h:"Sub-imperative 3.1", p:"One sentence describing this sub-imperative."},
+      {h:"Sub-imperative 3.2", p:"One sentence describing this sub-imperative."},
+      {h:"Sub-imperative 3.3", p:"One sentence describing this sub-imperative."}
+  ]},
+  { id:4, label:"People & Culture", desc:"Short descriptor for imperative four.",
+    subs:[
+      {h:"Sub-imperative 4.1", p:"One sentence describing this sub-imperative."},
+      {h:"Sub-imperative 4.2", p:"One sentence describing this sub-imperative."},
+      {h:"Sub-imperative 4.3", p:"One sentence describing this sub-imperative."}
+  ]},
+  { id:5, label:"Sustainability & Impact", desc:"Short descriptor for imperative five.",
+    subs:[
+      {h:"Sub-imperative 5.1", p:"One sentence describing this sub-imperative."},
+      {h:"Sub-imperative 5.2", p:"One sentence describing this sub-imperative."},
+      {h:"Sub-imperative 5.3", p:"One sentence describing this sub-imperative."}
+  ]}
+];
+/* ================================== */
+
+const wheel = document.getElementById('wheel');
+const spokes = document.getElementById('spokes');
+const panel = document.getElementById('panel');
+const N = IMPERATIVES.length;
+
+IMPERATIVES.forEach((imp, i) => {
+  const angle = (360 / N) * i;            // even spacing around the circle
+  // node
+  const node = document.createElement('div');
+  node.className = 'node';
+  node.style.setProperty('--a', angle + 'deg');
+  node.innerHTML = `<div class="dot">${imp.id}</div><div class="label">${imp.label}</div>`;
+  node.addEventListener('click', () => open(i, node));
+  wheel.appendChild(node);
+  // spoke line (from centre to node position)
+  const rad = (angle - 90) * Math.PI / 180;
+  const x = 50 + Math.cos(rad) * 33, y = 50 + Math.sin(rad) * 33;
+  spokes.insertAdjacentHTML('beforeend',
+    `<line x1="50" y1="50" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}"/>`);
+});
+
+function open(i, node){
+  document.querySelectorAll('.node').forEach(n => n.classList.remove('active'));
+  node.classList.add('active');
+  const imp = IMPERATIVES[i];
+  document.getElementById('p-title').textContent = `${imp.id}. ${imp.label}`;
+  document.getElementById('p-desc').textContent = imp.desc;
+  document.getElementById('p-subs').innerHTML = imp.subs.map((s,k) =>
+    `<div class="sub"><div class="n">${imp.id}.${k+1}</div>
+       <div><h3>${s.h}</h3><p>${s.p}</p></div></div>`).join('');
+  panel.classList.add('open');
+  panel.scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+</script>
+</body>
+</html>
